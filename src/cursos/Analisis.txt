@@ -1,0 +1,54 @@
+class Curso
+
+	- int id
+	- String nombre
+	- String descrpcion
+	- int año
+
+	+ Curso(int id, String nombre, String descripcion, int año)
+	
+	+ int getId()
+	+ String getNombre()
+	+ String getDescripcion()
+	+ int getAño()
+	+ void setAño(int año)
+	
+	+ int hasCode()
+	+ String toString()
+	+ boolean equals(Obj objeto)
+	
+
+class CursoDAO
+
+	+ boolean crearCurso (int id, String nombre, String descripcion, int año)
+	+ List<Curso> listarCursos ()
+	+ boolean asignarProfesorCursos (int idCurso, int idProfesor)
+	+ List<String> listarEstudiantesCurso (int idCurso)
+	+ boolean eliminarCurso (int id)
+
+
+--------------------------------------------------------------------
+
+class IdErrorException extends Exception
+
+	+ String toString()
+	+ String getMessage()
+	
+
+class NombreErrorException extends Exception
+
+	+ String toString()
+	+ String getMessage()
+	
+
+class DescripcionErrorException extends Exception
+
+	+ String toString()
+	+ String getMessage()
+	
+
+class AñoErrorException extends Exception
+
+	+ String toString()
+	+ String getMessage()
+	
