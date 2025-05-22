@@ -33,6 +33,9 @@ public class Curso {
 	 */
 	private int año;
 
+	
+	
+	
 	/**
 	 * Constructor Curso, es el encargado de crear el objeto Curso, el cual
 	 * recibira los siguientes datos por parametro, aparte tambien controla la
@@ -63,6 +66,52 @@ public class Curso {
 		} else {
 			throw new IdErrorException();
 		}
+
+		if (nombre != null && !nombre.isBlank()) {
+
+			this.nombre = nombre;
+
+		} else {
+			throw new NombreErrorException();
+		}
+
+		if (descripcion != null && !descripcion.isBlank()) {
+
+			this.descripcion = descripcion;
+
+		} else {
+			throw new DescripcionErrorException();
+		}
+
+		if (año > 0) {
+
+			this.año = año;
+
+		} else {
+			throw new AñoErrorException();
+		}
+
+	}
+	
+	/**
+	 * Constructor Curso, es el encargado de crear el objeto Curso, el cual
+	 * recibira los siguientes datos por parametro, aparte tambien controla la
+	 * introducion de datos si son correcto y si son erroneas saltara las siguientes
+	 * excepciones:
+	 * 
+	 * @param nombre      Nombre del curso
+	 * @param descripcion Descripción del curso
+	 * @param año         Año en el que trascurrira el curso
+	 * 
+	 * @throws NombreErrorException      Excepción que controla el nombre del curso
+	 *                                   introducido por parametro
+	 * @throws DescripcionErrorException Excepción que controla la descripciñon del
+	 *                                   curso introducido por parametro
+	 * @throws AñoErrorException         Excepción que controla el año introducido
+	 *                                   por parametro
+	 */
+	public Curso( String nombre, String descripcion, int año)
+			throws  NombreErrorException, DescripcionErrorException, AñoErrorException {
 
 		if (nombre != null && !nombre.isBlank()) {
 
