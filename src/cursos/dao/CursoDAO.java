@@ -1,4 +1,4 @@
-package cursos.utils;
+package cursos.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -120,34 +120,22 @@ public class CursoDAO {
 	 * @param idCurso    el id del curso al que quieren asignar al profesor
 	 * @return devulve un boolean si se ha podido asignar o no
 	 */
-	public boolean asignarProfesorCurso(int idProfesor, int idCurso) {
+	public int asignarProfesorCurso(int idProfesor, int idCurso) {
 
-		boolean seAsigno = false;
+		int seAsigno=0;
 
-		boolean existeP = false;
-		boolean existeC = false;
+		boolean existeP ;
+		boolean existeC;
 
 		Statement st;
 		try {
 			st = conexion.createStatement();
 
-			ResultSet rsP = st.executeQuery("SELECT id_profesor FROM Profesores");
+			ResultSet rsP = st.executeQuery("SELECT id_profesor FROM Profesores WHERE id_profesor="+idProfesor);
 
-			while (rsP.next()) {
-				if (rsP.getInt("id_profesor") == idProfesor) {
-					existeP = true;
-				}
-			}
+			ResultSet rsC = st.executeQuery("SELECT id_curso FROM Cursos WHERE id_curso="+idCurso);
 
-			ResultSet rsC = st.executeQuery("SELECT id_curso FROM Cursos");
-
-			while (rsC.next()) {
-				if (rsC.getInt("id_curso") == idCurso) {
-					existeC = true;
-				}
-			}
-
-			if (existeC && existeP) {
+			if (rsC.next() && rsP.next()) {
 
 				String sql = "INSERT INTO CursoProfesor (id_profesor, id_curso)" + "VALUES (?, ?)";
 
@@ -157,9 +145,7 @@ public class CursoDAO {
 				ps.setInt(1, idProfesor);
 				ps.setInt(2, idCurso);
 
-				ps.executeUpdate();
-
-				seAsigno = true;
+				seAsigno = ps.executeUpdate();
 
 			}
 
@@ -180,8 +166,8 @@ public class CursoDAO {
 	 *                que tiene
 	 * @return devuelve un String con todos los datos de los estudiantes
 	 */
-	public String listaEstudiantesCurso(int idCurso) {
-		String lista = "";
+	public List<String> listaEstudiantesCurso(int idCurso) {
+		List<String> lista = new ArrayList<String>();
 
 		Statement st;
 		try {
@@ -193,9 +179,9 @@ public class CursoDAO {
 
 			while (rs.next()) {
 
-				lista += "-" + rs.getString("nombre") + " " + rs.getString("apellido") + " \n\tFecha nacimiento: "
+				lista.add("-" + rs.getString("nombre") + " " + rs.getString("apellido") + " \n\tFecha nacimiento: "
 						+ rs.getString("fecha_nacimiento") + " \n\tEmail: " + rs.getString("email") + " \n\tTelefono: "
-						+ rs.getString("telefono") + "\n\n";
+						+ rs.getString("telefono") + "\n\n")  ;
 
 			}
 

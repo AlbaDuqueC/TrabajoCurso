@@ -18,6 +18,6 @@ public class Constantes {
 	/**
 	 * Constante que almacena la contraseña para acceder a la base de datos
 	 */
-	public static final String CONTRASEÑA = "alba123";
+	public static final String CONTRASEÑA = "alba1234";
 
 }
