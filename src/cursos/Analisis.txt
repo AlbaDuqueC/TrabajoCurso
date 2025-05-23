@@ -20,10 +20,10 @@ class Curso
 
 class CursoDAO
 
-	+ boolean crearCurso (int id, String nombre, String descripcion, int año)
+	+ boolean crearCurso (Curso cur)
 	+ List<Curso> listarCursos ()
 	+ boolean asignarProfesorCursos (int idCurso, int idProfesor)
-	+ List<String> listarEstudiantesCurso (int idCurso)
+	+ String listarEstudiantesCurso (int idCurso)
 	+ boolean eliminarCurso (int id)
 
 

@@ -17,10 +17,20 @@ import cursos.excepciones.NombreErrorException;
 
 import static cursos.utils.Constantes.*;
 
+/**
+ * Clase CursoDAO, es la encargada de insertar, modificar, eliminar y extraer
+ * los datos de la base de datos
+ */
 public class CursoDAO {
 
+	/**
+	 * Variable que se encarga de la conexion
+	 */
 	private Connection conexion;
 
+	/**
+	 * Constructor que conecata a la base de datos
+	 */
 	public CursoDAO() {
 
 		try {
@@ -31,11 +41,23 @@ public class CursoDAO {
 
 	}
 
+	/**
+	 * funcion que devuelve la conexion
+	 * 
+	 * @return devuelve la conexion
+	 */
 	public Connection getConexion() {
 		return conexion;
 	}
 
-	public void create(Curso cur) {
+	/**
+	 * inserta un nuevo curso a la base de datos
+	 * 
+	 * @param cur Recibe un ojeto Curso con todos los datos ingresados anteriormente
+	 * @return devuelve si se ha podido insertar o no a la base de datos
+	 */
+	public boolean create(Curso cur) {
+		boolean creada = true;
 		String sql = "INSERT INTO Cursos (nombre, descripcion, año_escolar)" + "VALUES (?, ?, ?)";
 
 		PreparedStatement ps;
@@ -49,10 +71,18 @@ public class CursoDAO {
 
 		} catch (SQLException e) {
 			System.out.println("Error al insertar en cursos: " + e.getMessage());
+			creada = false;
 		}
+
+		return creada;
 
 	}
 
+	/**
+	 * Funcion que crea una lista con todos los cursos de la base de datos
+	 * 
+	 * @return devuleve una lista con todos los datos ingresados en ella
+	 */
 	public List<Curso> listarCursos() {
 
 		List<Curso> lista = new ArrayList<Curso>();
@@ -74,7 +104,7 @@ public class CursoDAO {
 		} catch (SQLException e) {
 
 			System.out.println(e);
-			
+
 		} catch (IdErrorException | NombreErrorException | DescripcionErrorException | AñoErrorException e) {
 			System.out.println(e.getMessage());
 		}
@@ -83,7 +113,16 @@ public class CursoDAO {
 
 	}
 
-	public void asignarProfesorCurso(int idProfesor, int idCurso) {
+	/**
+	 * Metodo que asigna un profesor a un curso
+	 * 
+	 * @param idProfesor el id del profesor al que quieran asignar el curso
+	 * @param idCurso    el id del curso al que quieren asignar al profesor
+	 * @return devulve un boolean si se ha podido asignar o no
+	 */
+	public boolean asignarProfesorCurso(int idProfesor, int idCurso) {
+
+		boolean seAsigno = false;
 
 		boolean existeP = false;
 		boolean existeC = false;
@@ -92,7 +131,7 @@ public class CursoDAO {
 		try {
 			st = conexion.createStatement();
 
-			ResultSet rsP = st.executeQuery("SELECT id_profesor FROM Profesor");
+			ResultSet rsP = st.executeQuery("SELECT id_profesor FROM Profesores");
 
 			while (rsP.next()) {
 				if (rsP.getInt("id_profesor") == idProfesor) {
@@ -120,6 +159,8 @@ public class CursoDAO {
 
 				ps.executeUpdate();
 
+				seAsigno = true;
+
 			}
 
 		} catch (SQLException e) {
@@ -127,8 +168,18 @@ public class CursoDAO {
 			System.out.println(e);
 		}
 
+		return seAsigno;
+
 	}
 
+	/**
+	 * Metodo que crea un String como si fuera una lista de todos los Estudiantes de
+	 * un curso
+	 * 
+	 * @param idCurso recibe el id del curso al que queremos saber los estudiantes
+	 *                que tiene
+	 * @return devuelve un String con todos los datos de los estudiantes
+	 */
 	public String listaEstudiantesCurso(int idCurso) {
 		String lista = "";
 
@@ -136,14 +187,15 @@ public class CursoDAO {
 		try {
 			st = conexion.createStatement();
 			ResultSet rs = st
-					.executeQuery("SELECT nombre, apellido, fecha_nacimiento, email, telefono FROM Estudiante AS E "
+					.executeQuery("SELECT nombre, apellido, fecha_nacimiento, email, telefono FROM Estudiantes AS E "
 							+ "INNER JOIN Matriculas AS M ON E.id_estudiante=M.id_estudiante WHERE M.id_curso="
 							+ idCurso);
 
 			while (rs.next()) {
 
-				lista += "-"+ rs.getString("nombre") + " " + rs.getString("apellido") + " \n\tFecha nacimiento: " + rs.getString("fecha_nacimiento") + " \n\tEmail: "
-						+ rs.getString("email") + " \n\tTelefono: " + rs.getString("telefono") + "\n\n";
+				lista += "-" + rs.getString("nombre") + " " + rs.getString("apellido") + " \n\tFecha nacimiento: "
+						+ rs.getString("fecha_nacimiento") + " \n\tEmail: " + rs.getString("email") + " \n\tTelefono: "
+						+ rs.getString("telefono") + "\n\n";
 
 			}
 
@@ -154,17 +206,39 @@ public class CursoDAO {
 
 		return lista;
 	}
-	
-	public void eliminar(int idCurso) {
-		Statement st;
-		try {
-			st = conexion.createStatement();
-			ResultSet rs = st
-					.executeQuery("DELETE FROM Cursos WHERE id_curso="+  idCurso);
-		}catch (SQLException e) {
 
-			System.out.println(e);
+	/**
+	 * metodo para eliminar el curso
+	 * 
+	 * @param idCurso id del curso que quiera eliminar
+	 * @return devuelve un boolean si se ha podido eliminar o no el curso
+	 */
+	public boolean eliminar(int idCurso) {
+
+		boolean eliminado = false;
+
+		String sql1 = " DELETE FROM Matriculas WHERE id_curso= " + idCurso;
+
+		String sql2 = " DELETE FROM CursoProfesor WHERE id_curso= " + idCurso;
+
+		String sql3 = " DELETE FROM Cursos WHERE id_curso= " + idCurso;
+
+		Statement ps;
+
+		try {
+
+			ps = conexion.createStatement();
+
+			ps.executeUpdate(sql1);
+			ps.executeUpdate(sql2);
+			ps.executeUpdate(sql3);
+
+			eliminado = true;
+		} catch (SQLException e) {
+			System.err.println(e);
 		}
+
+		return eliminado;
 	}
 
 }
