@@ -56,8 +56,8 @@ public class CursoDAO {
 	 * @param cur Recibe un ojeto Curso con todos los datos ingresados anteriormente
 	 * @return devuelve si se ha podido insertar o no a la base de datos
 	 */
-	public boolean create(Curso cur) {
-		boolean creada = true;
+	public int create(Curso cur) {
+		int creada = 0;
 		String sql = "INSERT INTO Cursos (nombre, descripcion, año_escolar)" + "VALUES (?, ?, ?)";
 
 		PreparedStatement ps;
@@ -67,11 +67,11 @@ public class CursoDAO {
 			ps.setString(2, cur.getDescrpcion());
 			ps.setInt(3, cur.getAño());
 
-			ps.executeUpdate();
+			creada=ps.executeUpdate();
 
 		} catch (SQLException e) {
 			System.out.println("Error al insertar en cursos: " + e.getMessage());
-			creada = false;
+			
 		}
 
 		return creada;
@@ -123,22 +123,23 @@ public class CursoDAO {
 	public int asignarProfesorCurso(int idProfesor, int idCurso) {
 
 		int seAsigno=0;
-
-		boolean existeP ;
-		boolean existeC;
+		
+		String sql = "INSERT INTO CursoProfesor (id_profesor, id_curso)" + "VALUES (?, ?)";
 
 		Statement st;
+		
+		Statement st2;
 		try {
 			st = conexion.createStatement();
+			st2 = conexion.createStatement();
 
 			ResultSet rsP = st.executeQuery("SELECT id_profesor FROM Profesores WHERE id_profesor="+idProfesor);
 
-			ResultSet rsC = st.executeQuery("SELECT id_curso FROM Cursos WHERE id_curso="+idCurso);
+			ResultSet rsC = st2.executeQuery("SELECT id_curso FROM Cursos WHERE id_curso="+idCurso);
 
 			if (rsC.next() && rsP.next()) {
 
-				String sql = "INSERT INTO CursoProfesor (id_profesor, id_curso)" + "VALUES (?, ?)";
-
+				
 				PreparedStatement ps;
 
 				ps = conexion.prepareStatement(sql);
@@ -199,9 +200,9 @@ public class CursoDAO {
 	 * @param idCurso id del curso que quiera eliminar
 	 * @return devuelve un boolean si se ha podido eliminar o no el curso
 	 */
-	public boolean eliminar(int idCurso) {
+	public int eliminar(int idCurso) {
 
-		boolean eliminado = false;
+		int eliminado = 0;
 
 		String sql1 = " DELETE FROM Matriculas WHERE id_curso= " + idCurso;
 
@@ -215,11 +216,11 @@ public class CursoDAO {
 
 			ps = conexion.createStatement();
 
-			ps.executeUpdate(sql1);
-			ps.executeUpdate(sql2);
-			ps.executeUpdate(sql3);
+			eliminado += ps.executeUpdate(sql1);
+			eliminado += ps.executeUpdate(sql2);
+			eliminado += ps.executeUpdate(sql3);
 
-			eliminado = true;
+			
 		} catch (SQLException e) {
 			System.err.println(e);
 		}

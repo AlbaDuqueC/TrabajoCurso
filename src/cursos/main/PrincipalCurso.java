@@ -83,7 +83,7 @@ public class PrincipalCurso {
 
 					// Creamos el objeto CursoDAO
 					CursoDAO dao = new CursoDAO();
-					if (dao.create(c)) {
+					if (dao.create(c)>0) {
 						// Muestra por pantalla que se ha podido crear el curso
 						System.out.println("Fue bien creada el nuevo curso e introducida en la base de datos");
 					} else {
@@ -199,7 +199,7 @@ public class PrincipalCurso {
 				CursoDAO cur = new CursoDAO();
 
 				// Si se ha podido eliminar
-				if (cur.eliminar(idCurso)) {
+				if (cur.eliminar(idCurso)>0) {
 
 					// Muestra por pantalla si fue eliminado
 					System.out.println("Fue elimando con exito");
